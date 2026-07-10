@@ -32,12 +32,11 @@ let
     export _JAVA_AWT_WM_NONREPARENTING=1
 
     # --- Session Execution via explicit package binary path ---
-    exec systemd-cat --identifier=mangowm ${cfg.package}/bin/mangowc
+    # Fixed: Pointed to 'mango' executable found in your package nix-store string
+    exec systemd-cat --identifier=mangowm ${cfg.package}/bin/mango
   '';
 
-  # Fixed: Wrapping the .desktop generation into a proper package layout
   mangowmDesktopSession = pkgs.runCommand "mangowm-desktop-session" {
-    # This empty passthru explicitly satisfies the NixOS 'package with provided sessions' type check
     passthru.providedSessions = [ "mangowm" ];
   } ''
     mkdir -p $out/share/wayland-sessions
@@ -73,7 +72,6 @@ in
       mangowmDesktopSession
     ];
 
-    # Now passes validation perfectly
     services.displayManager.sessionPackages = [ mangowmDesktopSession ];
 
     # XDG Desktop Portal Pipeline
