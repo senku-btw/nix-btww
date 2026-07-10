@@ -6,10 +6,12 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [ 
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./boot/initrd.nix
       ./drivers/nvidia-graphics.nix
+      ./services/greetd.nix
     ];
 
   swapDevices = [
