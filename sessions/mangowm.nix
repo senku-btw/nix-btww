@@ -102,7 +102,6 @@ in
       enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
-        vaapiNvidia
         nvidia-vaapi-driver
       ];
     };
