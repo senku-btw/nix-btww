@@ -11,7 +11,7 @@ let
     fi
 
     # --- NixOS Keyboard Location Pipeline ---
-    # Fixes: xkbcommon: ERROR: Couldn't find file "symbols/us"
+    # Forces the keyboard layout engine to find the layout files in the Nix store
     export XKB_CONFIG_ROOT="${pkgs.xkeyboard_config}/share/X11/xkb"
 
     # --- Hardware & Renderer Pipeline Hardening (NVIDIA Focus) ---
