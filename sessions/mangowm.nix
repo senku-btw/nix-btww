@@ -32,17 +32,23 @@ let
     export _JAVA_AWT_WM_NONREPARENTING=1
 
     # --- Session Execution via explicit package binary path ---
-    # NOTE: If the binary is named something else, change 'mangowc' to the exact name of the executable.
     exec systemd-cat --identifier=mangowm ${cfg.package}/bin/mangowc
   '';
 
-  mangowmDesktopSession = pkgs.writeTextDir "share/wayland-sessions/mangowm.desktop" ''
+  # Fixed: Wrapping the .desktop generation into a proper package layout
+  mangowmDesktopSession = pkgs.runCommand "mangowm-desktop-session" {
+    # This empty passthru explicitly satisfies the NixOS 'package with provided sessions' type check
+    passthru.providedSessions = [ "mangowm" ];
+  } ''
+    mkdir -p $out/share/wayland-sessions
+    cat <<EOF > $out/share/wayland-sessions/mangowm.desktop
     [Desktop Entry]
     Name=MangoWM
     Comment=Production-Grade High Performance Tile/Grid Window Manager
     Exec=${mangoSessionStartup}/bin/mangowm-session
     Type=Application
     DesktopNames=MangoWM
+    EOF
   '';
 in
 {
@@ -61,14 +67,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # Provide system-wide session registration so Greetd can see it at boot
     environment.systemPackages = [
       cfg.package
       mangoSessionStartup
       mangowmDesktopSession
     ];
 
-    # Explicitly register the desktop session package into the global NixOS display manager data fields
+    # Now passes validation perfectly
     services.displayManager.sessionPackages = [ mangowmDesktopSession ];
 
     # XDG Desktop Portal Pipeline
