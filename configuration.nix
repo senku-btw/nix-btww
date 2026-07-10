@@ -30,11 +30,10 @@
   i18n.defaultLocale = "en_US.UTF-8";
   
   services.xserver = {
-  enable = true; # This stays!
-  xkb = {
-    layout = "us";
-    options = "altwin:swap_lalt_lwin";
-    };
+    enable = true;
+    xkb = {
+      layout = "us";
+     };
   };
   
   # Define a user account.
