@@ -1,3 +1,4 @@
+# ~/nix-btww/services.greetd.nix
 { config, pkgs, lib, ... }:
 
 {
