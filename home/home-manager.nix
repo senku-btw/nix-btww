@@ -19,7 +19,7 @@ in
     # 1. Imports
     imports = [
       # Points to your new environment packages file
-      ./packages/environment-packages.nix 
+      ../packages/environment-packages.nix
     ];
 
     # 2. Home Manager basics
