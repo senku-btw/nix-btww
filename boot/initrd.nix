@@ -3,55 +3,67 @@
 
 {
   # --- Bootloader Architecture ---
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.systemd-boot.editor = false;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.systemd-boot.enable = true; # Lightweight EFI bootloader (faster than GRUB)
+  boot.loader.systemd-boot.editor = false; # Disables editing kernel params at boot for security
+  boot.loader.efi.canTouchEfiVariables = true; # Allows the installer to modify NVRAM variables to set the default boot entry
   
   # Forces the UEFI framebuffer to utilize your monitor's native max resolution 
-  # right at the boot menu, ensuring a pixel-perfect handoff to the LUKS screen.
   boot.loader.systemd-boot.consoleMode = "max";
   
-  # Reduced to 1 second for fast handoff (Spam arrow keys to catch it if needed)
+  # Reduced to 1 second for fast handoff (Spam arrow keys to catch it if needed).
+  # Bypasses the standard 5-second wait time to jump straight into init.
   boot.loader.timeout = 1; 
 
   # --- LUKS Encrypted Container Initialization ---
   boot.initrd.luks.devices."enc-pv" = {
     device = "/dev/disk/by-uuid/a4232927-3a94-4f36-aad6-caca4af1bada";
-    allowDiscards = true;      
-    bypassWorkqueues = true;   
+    allowDiscards = true;      # Passes TRIM requests through LUKS to maintain native NVMe write performance.
+    bypassWorkqueues = true;   # Bypasses kernel crypto queues for synchronous, zero-latency inline decryption.
   };
 
-  # LTS Kernel for absolute stability
+  # LTS Kernel for absolute stability (Enterprise requirement)
   boot.kernelPackages = pkgs.linuxPackages;
   
   # --- Initrd & Systemd Streamlining ---
+
+  # Allows for parallel device initialization and service starting.
   boot.initrd.systemd.enable = true;
+
+  # Uses Zstandard compression for the initrd image.
   boot.initrd.compressor = "zstd";
-  boot.initrd.compressorArgs = [ "-1" ];
   
-  # RESTORED: Must be true so NixOS includes base input, bus, and HID drivers for your keyboard
+  # Uses compression level 1. Trades a slightly larger file size for ultra-fast decompression.
+  boot.initrd.compressorArgs = [ "-1" ]; 
+  
   boot.initrd.includeDefaultModules = true; 
 
-  # Pull in hardware-accelerated crypto modules to unlock the NVMe immediately
+  # AES-NI hardware instructions drastically reduce LUKS unlock CPU overhead.
   boot.initrd.kernelModules = [ "aesni_intel" "cryptd" ];
 
+  # Essential drivers required to mount the root filesystem and use a keyboard.
   boot.initrd.availableKernelModules = [
-    "nvme"          
-    "xhci_pci"      
-    "usbhid"        
-    "usb_storage"   
-    "btrfs"         
+    "nvme"          # NVMe drive support
+    "xhci_pci"      # USB 3.0 controller support
+    "usbhid"        # USB keyboards (for entering LUKS password)
+    "usb_storage"   # USB mass storage
+    "btrfs"         # Root filesystem support
   ];
 
   # --- Systemd Service Optimizations ---
+
+  # Stops the boot process from blocking while waiting for a network IP address.
   systemd.services.NetworkManager-wait-online.enable = false;
+
+  # Disables a legacy service that waits for all hardware devices to be processed.
   systemd.services.systemd-udev-settle.enable = false;
   
+  # Prevents hanging services from indefinitely stalling the boot/shutdown process.
   systemd.settings.Manager = {
     DefaultTimeoutStartSec = "10s";
     DefaultTimeoutStopSec = "10s";
   };
 
+  # Limits journal size. Reading massive log files on startup can cause minor IO delays.
   services.journald.extraConfig = ''
     SystemMaxUse=100M
     SystemMaxFileSize=20M
@@ -63,20 +75,20 @@
 
   # --- Advanced Kernel Parameters ---
   boot.kernelParams = [
-    "quiet"
-    "loglevel=3"
-    "printk.devkmsg=off"
-    "systemd.show_status=auto"
-    "rd.systemd.show_status=auto"
-    "systemd.log_level=err"
-    "udev.log_level=3"
-    "rd.udev.log_level=3"
-    "acpi.log_errors=0"
-    "fastboot"
-    "lp=0"
-    "noresume"
-    "vconsole.setup=0"
-    "vt.global_cursor_default=0" # Hides the flashing text cursor that triggers display refreshes
+    "quiet"                       # Suppresses non-critical kernel messages during early boot phases.
+    "loglevel=3"                  # Limits console logging to errors and critical warnings only.
+    "printk.devkmsg=off"          # Disables early kernel logging to /dev/kmsg to prevent display overhead.
+    "systemd.show_status=auto"    # Dynamically hides systemd status lines unless a service failure occurs.
+    "rd.systemd.show_status=auto" # Enforces dynamic, error-only systemd status reporting inside the initrd.
+    "systemd.log_level=err"       # Sets the systemd service manager log output strictly to errors.
+    "udev.log_level=3"            # Mitigates systemd-udevd noise by suppressing non-error logs.
+    "rd.udev.log_level=3"         # Suppresses udev logging inside the initial ramdisk environment.
+    "acpi.log_errors=0"           # Disables non-fatal ACPI firmware compliance and parsing errors.
+    "fastboot"                    # Skips unnecessary boot-time hardware and file system integrity checks.
+    "lp=0"                        # Disables parallel port polling to eliminate hardware timeout delays.
+    "noresume"                    # Bypasses checking block devices for a hibernation/suspend-to-disk image.
+    "vconsole.setup=0"            # defers virtual console styling initialization to optimize runtime transition.
+    "vt.global_cursor_default=0"  # Prevents display refresh overhead by hiding the early flashing text cursor.
   ];
 
   # --- High-Performance Runtime Storage ---
@@ -84,9 +96,9 @@
     fsType = "btrfs";
     options = [ 
       "subvol=@root"     
-      "noatime"          
-      "discard=async"   
-      "compress=zstd:1"  
+      "noatime"         # Eliminates access timestamp writes, significantly reducing I/O overhead.
+      "discard=async"   # Offloads SSD TRIM operations to the background to sustain high IOPS.
+      "compress=zstd:1" # Applies rapid transparent compression, trading I/O bottlenecks for CPU cycles.
     ];
   };  
 }
