@@ -1,9 +1,10 @@
-# ~/nix-btww/services/greetd.nix
+# /etc/nixos/services/greetd.nix
 { config, pkgs, lib, ... }:
 
 {
   # Ensure tuigreet is available to the system and greetd service
-  environment.systemPackages = [ pkgs.greetd.tuigreet ];
+  # Fixed: Cleaned up legacy greetd.tuigreet warning
+  environment.systemPackages = [ pkgs.tuigreet ];
 
   services.greetd = {
     enable = true;
@@ -11,7 +12,8 @@
       default_session = {
         # Production flags: remembers user/session, hides password text with asterisks,
         # scans the standard system session directory, and defaults to mangowm-session.
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --asterisks --remember --remember-session --sessions /run/current-system/sw/share/wayland-sessions:/usr/share/wayland-sessions --cmd mangowm-session";
+        # Fixed: Cleaned up legacy greetd.tuigreet warning path
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --asterisks --remember --remember-session --sessions /run/current-system/sw/share/wayland-sessions:/usr/share/wayland-sessions --cmd mangowm-session";
         user = "greeter";
       };
     };
@@ -43,7 +45,8 @@
       TTYVTDisallocate = true;
 
       # Production hardening: Automatic service recovery if the compositor crashes out
-      Restart = "on-failure";
+      # Fixed: Enforced "on-failure" priority to resolve NixOS configuration conflict
+      Restart = lib.mkForce "on-failure";
       RestartSec = "1s";
     };
   };
