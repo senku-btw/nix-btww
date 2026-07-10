@@ -16,11 +16,17 @@ in
   # This is where your exact Home Manager configuration gets injected
   home-manager.users.admin = { pkgs, ... }: {
     
-    # 1. Home Manager basics
+    # 1. Imports
+    imports = [
+      # Points to your new environment packages file
+      ./packages/environment-packages.nix 
+    ];
+
+    # 2. Home Manager basics
     home.username = "admin";
     home.homeDirectory = "/home/admin";
 
-    # 2. User Packages
+    # 3. User Packages
     home.packages = with pkgs; [
       wget
       curl
@@ -31,10 +37,10 @@ in
       fastfetch
     ];
 
-    # 3. Environment Variables & Session management
+    # 4. Environment Variables & Session management
     home.file.".config/mango/config.conf".source = /home/admin/dotfiles/config/mango/config.conf;
 
-    # 4. Programs & Services
+    # 5. Programs & Services
     programs.git = {
       enable = true;
     };
