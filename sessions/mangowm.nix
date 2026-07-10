@@ -1,4 +1,4 @@
-# ~/nix-btww/sessions/mangowm.nix
+# /etc/nixos/sessions/mangowm.nix
 # Enterprise-Grade MangoWM Composition & Session Registration Module
 
 { config, pkgs, lib, ... }:
@@ -66,7 +66,7 @@ in
       
       package = lib.mkOption {
         type = lib.types.package;
-        default = pkgs.mangowm;
+        default = pkgs.mangowc; # Fixed: pointed to real nixpkgs package name
         description = "The MangoWM package or derivation to deploy.";
       };
     };
@@ -102,7 +102,7 @@ in
       enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
-        nvidia-vaapi-driver
+        nvidia-vaapi-driver # Fixed: removed undefined vaapiNvidia package
       ];
     };
 
