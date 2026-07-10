@@ -29,32 +29,19 @@
   boot.initrd.compressor = "zstd";   # Uses Zstandard compression for the initrd image.
   boot.initrd.compressorArgs = [ "-1" ]; # Uses compression level 1 for rapid initialization.
   
-  # CRITICAL TWEAK: Disables loading standard legacy drivers to save CPU cycles.
-  boot.initrd.includeDefaultModules = false; 
+  # Allow the system to automatically load fallback driver dependencies 
+  boot.includeDefaultModules = true; 
 
-  # CRITICAL SPEED TWEAK: Force-loads critical storage, input, and AMD bus modules instantly without waiting for udev discovery.
+  # Keep your high-priority hardware list so it gets fast-tracked at early boot
   boot.initrd.kernelModules = [ 
-    "aesni_intel"  # AES-NI hardware crypto instructions.
-    "cryptd"       # Cryptographic daemon helper.
-    "nvme"         # Native NVMe storage driver.
-    
-    # --- Universal Input & Keyboard Controller Stack ---
-    "xhci_pci"     # USB 3.x controller support
-    "ehci_pci"     # USB 2.0 controller support
-    "ohci_pci"     # USB 1.1 legacy controller support
-    "usbhid"       # Core USB Human Interface Device driver
-    "hid_generic"  # Generic fallback for all modern USB keyboards
-    "evdev"        # Standard Linux event routing interface
-    
-    # --- Kernel Legacy Input Core (Fixes missing links) ---
-    "atkbd"        # Standard AT and PS/2 keyboard driver (Many BIOS/UEFI emulate USB keys as AT)
-    "i8042"        # Keyboard controller chip driver interface
-    "input_core"   # Foundation subsystem for all Linux input handling
-    
-    "usb_storage"  # USB mass storage support.
-    "ccp"          # AMD Cryptographic Coprocessor driver.
-    "amd_pmc"      # AMD Power Management Controller driver.
-    "btrfs"        # Root filesystem support
+    "aesni_intel"  
+    "cryptd"       
+    "nvme"         
+    "xhci_pci"     
+    "usbhid"       
+    "hid_generic"  
+    "evdev"        
+    "btrfs"        
   ];
 
   # --- Systemd Service Optimizations ---
