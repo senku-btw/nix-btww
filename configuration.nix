@@ -17,9 +17,6 @@
     { device = "/swap/swapfile"; }
   ];
 
-  # Activate the system-level MangoWM session details (Portals, Graphic drivers, and Greetd visibility)
-  services.mangowm-session.enable = true;
-
   # Define your hostname.
   networking.hostName = "nix-btw";
 
