@@ -1,6 +1,4 @@
 # /etc/nixos/sessions/mangowm.nix
-# Enterprise-Grade MangoWM Composition & Session Registration Module
-
 { config, pkgs, lib, ... }:
 
 let
@@ -8,8 +6,6 @@ let
 
   mangoSessionStartup = pkgs.writeShellScriptBin "mangowm-session" ''
     # --- Systemd Session Bootstrapping ---
-    # Import essential environment variables into the systemd user session
-    # before execution to ensure user-level systemd units function correctly.
     if command -v dbus-update-activation-environment >/dev/null 2>&1; then
       dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     fi
@@ -18,40 +14,33 @@ let
     export GBM_BACKEND=nvidia-drm
     export __GLX_VENDOR_LIBRARY_NAME=nvidia
     export LIBVA_DRIVER_NAME=nvidia
-    
-    # Anti-flicker and stability flags for modern wlroots / Wayland compositors on Team Green
     export WLR_NO_HARDWARE_CURSORS=1
-    export WLR_DRM_NO_ATOMIC=0 # Enforce modern atomic modesetting pipeline
+    export WLR_DRM_NO_ATOMIC=0 
 
     # --- Environment Hardening & Sanitization ---
     export XDG_SESSION_TYPE=wayland
     export XDG_CURRENT_DESKTOP=MangoWM
     export XDG_SESSION_DESKTOP=MangoWM
 
-    # Native Wayland routing for main enterprise UI toolkits
     export NIXOS_OZONE_WL="1"
     export MOZ_ENABLE_WAYLAND="1"
     export QT_QPA_PLATFORM="wayland;xcb"
     export SDL_VIDEODRIVER="wayland"
     export CLUTTER_BACKEND="wayland"
-    
-    # Modern Toolkit Tweaks for Nvidia Stability
     export ECOSM_RENDERER=vulkan       
     export ELECTRON_OZONE_PLATFORM_HINT="wayland"
-
-    # Fix Java rendering glitches on non-reparenting Wayland window managers
     export _JAVA_AWT_WM_NONREPARENTING=1
 
-    # --- Session Execution via Systemd Graphical Target ---
-    # Redirects stdout/stderr to journalctl via systemd-cat for structured logging
-    exec systemd-cat --identifier=mangowm ${lib.getExe cfg.package}
+    # --- Session Execution via explicit package binary path ---
+    # NOTE: If the binary is named something else, change 'mangowc' to the exact name of the executable.
+    exec systemd-cat --identifier=mangowm ${cfg.package}/bin/mangowc
   '';
 
   mangowmDesktopSession = pkgs.writeTextDir "share/wayland-sessions/mangowm.desktop" ''
     [Desktop Entry]
     Name=MangoWM
     Comment=Production-Grade High Performance Tile/Grid Window Manager
-    Exec=${lib.getExe mangoSessionStartup}
+    Exec=${mangoSessionStartup}/bin/mangowm-session
     Type=Application
     DesktopNames=MangoWM
   '';
@@ -65,7 +54,7 @@ in
       
       package = lib.mkOption {
         type = lib.types.package;
-        default = pkgs.mangowc; # Pointed to your actual package
+        default = pkgs.mangowc; 
         description = "The MangoWM package or derivation to deploy.";
       };
     };
@@ -79,20 +68,17 @@ in
       mangowmDesktopSession
     ];
 
+    # Explicitly register the desktop session package into the global NixOS display manager data fields
+    services.displayManager.sessionPackages = [ mangowmDesktopSession ];
+
     # XDG Desktop Portal Pipeline
     xdg.portal = {
       enable = true;
       wlr.enable = true;
-      extraPortals = [ 
-        pkgs.xdg-desktop-portal-gtk
-      ];
+      extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
       config = {
-        common = {
-          default = [ "wlr" "gtk" ];
-        };
-        MangoWM = {
-          default = [ "wlr" "gtk" ];
-        };
+        common.default = [ "wlr" "gtk" ];
+        MangoWM.default = [ "wlr" "gtk" ];
       };
     };
 
@@ -100,9 +86,7 @@ in
     hardware.graphics = {
       enable = true;
       enable32Bit = true;
-      extraPackages = with pkgs; [
-        nvidia-vaapi-driver
-      ];
+      extraPackages = with pkgs; [ nvidia-vaapi-driver ];
     };
 
     security.polkit.enable = true;
