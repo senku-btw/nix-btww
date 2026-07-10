@@ -1,4 +1,4 @@
-# /etc/nixos/sessions/mangowm.nix
+# ~/nix-btww/sessions/mangowm.nix
 # Enterprise-Grade MangoWM Composition & Session Registration Module
 
 { config, pkgs, lib, ... }:
@@ -43,25 +43,18 @@ in
   options = {
     services.mangowm-session = {
       enable = lib.mkEnableOption "Production MangoWM session architecture";
-      
-      # Enterprise addition: Declarative path variable so you aren't hardcoding strings
-      configPath = lib.mkOption {
-        type = lib.types.path;
-        default = /home/admin/dotfiles/config/mango/mangowm.conf;
-        description = "Absolute path to the mutable user configuration file.";
-      };
     };
   };
 
   config = lib.mkIf cfg.enable {
-    # 1. Provide core package suite dependencies
+    # 1. Provide system-wide session registration so Greetd/GDM can see it at boot
     environment.systemPackages = [
       pkgs.mangowm
       mangoSessionStartup
       mangowmDesktopSession
     ];
 
-    # 2. XDG Desktop Portal Pipeline - Fixed for modern portal configuration schemas
+    # 2. XDG Desktop Portal Pipeline - Keeps your screensharing and file dialogs working
     xdg.portal = {
       enable = true;
       wlr.enable = true;
@@ -70,7 +63,6 @@ in
         common = {
           default = [ "wlr" "gtk" ];
         };
-        # Safe explicit fallback for MangoWM desktop session identification
         MangoWM = {
           default = [ "wlr" "gtk" ];
         };
@@ -82,9 +74,5 @@ in
       enable = true;
       enable32Bit = true;
     };
-
-    # 4. Out-of-Store Dotfile Symlink Mapping
-    # Uses the cleanly typed configPath option instead of a hardcoded string literal
-    environment.etc."mango/mangowm.conf".source = cfg.configPath;
   };
 }
