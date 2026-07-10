@@ -37,8 +37,15 @@
     "aesni_intel"  # AES-NI hardware crypto instructions.
     "cryptd"       # Cryptographic daemon helper.
     "nvme"         # Native NVMe storage driver.
-    "xhci_pci"     # Standard USB 3.0 controller driver.
+    
+    # --- Critical Input & USB Controller Stack ---
+    "xhci_pci"     # Standard USB 3.0 (eXtensible Host Controller Interface)
+    "ohci_pci"     # Legacy USB 1.1 (Open Host Controller Interface)
+    "ehci_pci"     # Standard USB 2.0 (Enhanced Host Controller Interface)
     "usbhid"       # HID driver to enable keyboard input at the LUKS screen.
+    "hid_generic"  # Generic HID driver (ABSOLUTELY REQUIRED for modern keyboards)
+    "evdev"        # Linux Event Device driver (Passes raw input events to systemd)
+    
     "usb_storage"  # USB mass storage support.
     "ccp"          # AMD Cryptographic Coprocessor driver.
     "amd_pmc"      # AMD Power Management Controller driver.
