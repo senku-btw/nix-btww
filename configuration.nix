@@ -38,6 +38,7 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+  programs.ssh.startAgent = true;
 
   # Disable the firewall altogether.
   networking.firewall.enable = false;
