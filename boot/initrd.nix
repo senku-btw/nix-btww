@@ -29,8 +29,8 @@
   boot.initrd.compressor = "zstd";   # Uses Zstandard compression for the initrd image.
   boot.initrd.compressorArgs = [ "-1" ]; # Uses compression level 1 for rapid initialization.
   
-  # Allow the system to automatically load fallback driver dependencies 
-  boot.includeDefaultModules = true; 
+  # Fixed: Corrected missing prefix option name so default dependencies pull in cleanly
+  boot.initrd.includeDefaultModules = true; 
 
   # Keep your high-priority hardware list so it gets fast-tracked at early boot
   boot.initrd.kernelModules = [ 
