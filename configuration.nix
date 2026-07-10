@@ -13,6 +13,7 @@
       ./drivers/nvidia-graphics.nix
       ./services/greetd.nix
       ./sessions/mangowm.nix
+      ./home/home-manager.nix
     ];
 
   swapDevices = [
