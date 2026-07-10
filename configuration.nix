@@ -12,12 +12,16 @@
       ./boot/initrd.nix
       ./drivers/nvidia-graphics.nix
       ./services/greetd.nix
+      ./sessions/mangowm.nix
     ];
 
   swapDevices = [
     { device = "/swap/swapfile"; }
   ];
-  
+
+  # 2. Activate the MangoWM setup block
+  services.mangowm-session.enable = true;
+
   networking.hostName = "nix-btw"; # Define your hostname.
 
   # Configure network connections interactively with nmcli or nmtui.
