@@ -84,6 +84,7 @@
     "zswap.compressor=zstd"       # Forces zswap to use high-throughput Zstandard compression engine.
     "zswap.max_pool_percent=20"   # Caps zswap dynamic allocation to a maximum of 20% of physical system RAM.
     "video=efifb:decor=0"         # Simplifies early EFI framebuffer mappings to minimize mode-setting latency.
+    "hid_apple.swap_opt_cmd=1"    # Fix Keychron A2 modifier behavior and swap Option/Command at the hardware driver level.
   ];
 
   # --- High-Performance Runtime Storage ---
