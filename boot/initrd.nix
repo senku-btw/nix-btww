@@ -38,13 +38,18 @@
     "cryptd"       # Cryptographic daemon helper.
     "nvme"         # Native NVMe storage driver.
     
-    # --- Critical Input & USB Controller Stack ---
-    "xhci_pci"     # Standard USB 3.0 (eXtensible Host Controller Interface)
-    "ohci_pci"     # Legacy USB 1.1 (Open Host Controller Interface)
-    "ehci_pci"     # Standard USB 2.0 (Enhanced Host Controller Interface)
-    "usbhid"       # HID driver to enable keyboard input at the LUKS screen.
-    "hid_generic"  # Generic HID driver (ABSOLUTELY REQUIRED for modern keyboards)
-    "evdev"        # Linux Event Device driver (Passes raw input events to systemd)
+    # --- Universal Input & Keyboard Controller Stack ---
+    "xhci_pci"     # USB 3.x controller support
+    "ehci_pci"     # USB 2.0 controller support
+    "ohci_pci"     # USB 1.1 legacy controller support
+    "usbhid"       # Core USB Human Interface Device driver
+    "hid_generic"  # Generic fallback for all modern USB keyboards
+    "evdev"        # Standard Linux event routing interface
+    
+    # --- Kernel Legacy Input Core (Fixes missing links) ---
+    "atkbd"        # Standard AT and PS/2 keyboard driver (Many BIOS/UEFI emulate USB keys as AT)
+    "i8042"        # Keyboard controller chip driver interface
+    "input_core"   # Foundation subsystem for all Linux input handling
     
     "usb_storage"  # USB mass storage support.
     "ccp"          # AMD Cryptographic Coprocessor driver.
