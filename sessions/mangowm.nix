@@ -60,27 +60,26 @@ in
   options = {
     services.mangowm-session = {
       enable = lib.mkEnableOption "Production MangoWM session architecture" // {
-        # Setting default to true makes the module self-activating upon import
         default = true;
       };
       
       package = lib.mkOption {
         type = lib.types.package;
-        default = pkgs.mangowc; # Fixed: pointed to real nixpkgs package name
+        default = pkgs.mangowc; # Pointed to your actual package
         description = "The MangoWM package or derivation to deploy.";
       };
     };
   };
 
   config = lib.mkIf cfg.enable {
-    # 1. Provide system-wide session registration so Greetd/GDM can see it at boot
+    # Provide system-wide session registration so Greetd can see it at boot
     environment.systemPackages = [
       cfg.package
       mangoSessionStartup
       mangowmDesktopSession
     ];
 
-    # 2. XDG Desktop Portal Pipeline - Explicitly hardened for enterprise integration
+    # XDG Desktop Portal Pipeline
     xdg.portal = {
       enable = true;
       wlr.enable = true;
@@ -97,16 +96,15 @@ in
       };
     };
 
-    # 3. Hardware / Pipeline acceleration infrastructure
+    # Hardware / Pipeline acceleration infrastructure
     hardware.graphics = {
       enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
-        nvidia-vaapi-driver # Fixed: removed undefined vaapiNvidia package
+        nvidia-vaapi-driver
       ];
     };
 
-    # 4. Core dependencies for enterprise workstation plumbing
     security.polkit.enable = true;
     services.dbus.enable = true;
   };
