@@ -32,7 +32,7 @@ in
     ];
 
     # 3. Environment Variables & Session management
-    home.file.".config/mango/config.conf".source = /home/admin/dotfiles/config/mango/config.conf;
+    home.file.".config/mango/config.conf".source = /home/admin/dotfiles/mango/config.conf;
 
     # 4. Programs & Services
     programs.git = {
