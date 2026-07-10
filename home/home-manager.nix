@@ -1,42 +1,56 @@
 { config, pkgs, ... }:
 
+let
+  # Dynamically fetches the Home Manager module matching your system version
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-26.05.tar.gz";
+in
 {
-  # 1. Home Manager basics
-  home.username = "admin";
-  home.homeDirectory = "/home/admin";
-
-  # 2. User Packages (Merged from your systemPackages and user packages)
-  home.packages = with pkgs; [
-    # System utilities you wanted
-    wget
-    curl
-    git
-    nano
-    btop
-    tree
-    fastfetch
+  imports = [
+    (import "${home-manager}/nixos")
   ];
 
-  # 3. Environment Variables & Session management
-  home.file.".config/mango/mangowm.conf".source = /home/admin/dotfiles/config/mango/mangowm.conf;
+  # Tells Home Manager to use the global system packages and overwrite conflicts
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
 
-  # 4. Programs & Services (User-level equivalents)
-  programs.git = {
-    enable = true;
+  # This is where your exact Home Manager configuration gets injected
+  home-manager.users.admin = { pkgs, ... }: {
+    
+    # 1. Home Manager basics
+    home.username = "admin";
+    home.homeDirectory = "/home/admin";
+
+    # 2. User Packages
+    home.packages = with pkgs; [
+      wget
+      curl
+      git
+      nano
+      btop
+      tree
+      fastfetch
+    ];
+
+    # 3. Environment Variables & Session management
+    home.file.".config/mango/mangowm.conf".source = /home/admin/dotfiles/config/mango/mangowm.conf;
+
+    # 4. Programs & Services
+    programs.git = {
+      enable = true;
+    };
+
+    programs.gpg = {
+      enable = true;
+    };
+
+    services.gpg-agent = {
+      enable = true;
+      enableSshSupport = true;
+    };
+
+    # Let Home Manager install and manage itself
+    programs.home-manager.enable = true;
+
+    home.stateVersion = "26.05"; 
   };
-
-  programs.gpg = {
-    enable = true;
-  };
-
-  # GPG Agent / SSH Support at the user level
-  services.gpg-agent = {
-    enable = true;
-    enableSshSupport = true;
-  };
-
-  home.stateVersion = "26.05"; 
-
-  # Let Home Manager install and manage itself
-  programs.home-manager.enable = true;
 }
