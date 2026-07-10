@@ -28,7 +28,13 @@
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
+  
+  services.xserver.xkb = {
+    enable = true;
+    layout = "us";
+    options = "altwin:swap_lalt_lwin";
+  };
+  
   # Define a user account.
   users.users.admin = {
     isNormalUser = true;
