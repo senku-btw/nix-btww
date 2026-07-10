@@ -20,7 +20,10 @@
   ];
 
   # 2. Activate the MangoWM setup block
-  services.mangowm-session.enable = true;
+  services.mangowm-session = {
+     enable = true;
+     configPath = /home/admin/dotfiles/config/mango/mangowm.conf; # Clean, checked path type!
+  };
 
   networking.hostName = "nix-btw"; # Define your hostname.
 
