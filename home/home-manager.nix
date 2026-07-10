@@ -16,6 +16,7 @@ in
     
     imports = [
       ../packages/environment-packages.nix
+      ../packages/desktop-applications.nix
     ];
 
     # User Profile Definition
