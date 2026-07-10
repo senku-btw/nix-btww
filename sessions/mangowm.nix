@@ -10,12 +10,14 @@ let
       dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     fi
 
+    # --- NixOS Keyboard Location Pipeline ---
+    # Fixes: xkbcommon: ERROR: Couldn't find file "symbols/us"
+    export XKB_CONFIG_ROOT="${pkgs.xkeyboard_config}/share/X11/xkb"
+
     # --- Hardware & Renderer Pipeline Hardening (NVIDIA Focus) ---
-    export GBM_BACKEND=nvidia-drm
     export __GLX_VENDOR_LIBRARY_NAME=nvidia
     export LIBVA_DRIVER_NAME=nvidia
     export WLR_NO_HARDWARE_CURSORS=1
-    export WLR_DRM_NO_ATOMIC=0 
 
     # --- Environment Hardening & Sanitization ---
     export XDG_SESSION_TYPE=wayland
@@ -32,7 +34,6 @@ let
     export _JAVA_AWT_WM_NONREPARENTING=1
 
     # --- Session Execution via explicit package binary path ---
-    # Fixed: Pointed to 'mango' executable found in your package nix-store string
     exec systemd-cat --identifier=mangowm ${cfg.package}/bin/mango
   '';
 
