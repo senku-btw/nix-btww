@@ -1,31 +1,46 @@
-{ pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        # --time shows a clock, --remember remembers your last user, --cmd launches your desktop environment
-        # Replace 'Hyprland' at the end with your specific DM/WM command if you use something else (e.g., sway, startwfx)
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+        # Production flags: remembers user/session, hides password text with asterisks,
+        # scans the correct Wayland session path, and defaults to mangowm-session.
+        command = "${lib.getExe pkgs.tuigreet} --time --asterisks --remember --remember-session --sessions /run/current-system/sw/share/wayland-sessions --cmd mangowm-session";
         user = "greeter";
       };
     };
   };
 
-  # High-performance console tuning for greetd to prevent race conditions with your rapid boot & Nvidia drivers
+  # --- High-Availability & Lifecycle Architecture ---
   systemd.services.greetd = {
-    unitConfig = {
-      After = [ "rc-local.service" "systemd-user-sessions.service" "plymouth-quit-active.service" "getty@tty1.service" ];
-      Conflicts = [ "getty@tty1.service" ];
-    };
+    # Guarantees the graphics stack, DRM drivers (Nvidia), and base TTY infrastructure 
+    # are completely active before greetd draws to the screen. Prevents race-condition black screens.
+    after = [ 
+      "rc-local.service" 
+      "systemd-user-sessions.service" 
+      "plymouth-quit-active.service" 
+      "getty@tty1.service"
+      "display-manager.service"
+    ];
+    conflicts = [ "getty@tty1.service" ];
+    provides = [ "display-manager.service" ];
+
     serviceConfig = {
-      Type = "idle";
+      Type = lib.mkForce "idle";
+      
+      # TTY isolation and absolute zero logging-overhead on tty1
+      StandardInput = "tty";
       StandardOutput = "tty";
       StandardError = "journal";
       TTYReset = true;
       TTYVHangup = true;
       TTYVTDisallocate = true;
+
+      # Production hardening: Automatic service recovery if the compositor crashes out
+      Restart = "on-failure";
+      RestartSec = "1s";
     };
   };
 }
