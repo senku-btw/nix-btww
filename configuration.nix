@@ -4,51 +4,46 @@
 {
   imports =
     [ 
-      ./machines/prometheus/hardware-configuration.nix
+      # Hardware & Boot
+      ./machines/nix-btw/hardware-configuration.nix
       ./boot/initrd.nix
       ./drivers/nvidia-graphics.nix
+      
+      # Environment & Display
       ./services/greetd.nix
       ./sessions/mangowm.nix
+      
+      # Users & Home Management
       ./home/home-manager.nix
+      ./users/nyx/user-profile.nix
     ];
 
+  # Swap space configuration
   swapDevices = [
     { device = "/swap/swapfile"; }
   ];
 
-  # Define your hostname.
+  # Networking
   networking.hostName = "prometheus";
-
-  # Configure network connections interactively with nmcli or nmtui.
   networking.networkmanager.enable = true;
+  networking.firewall.enable = false;
 
-  # Set your time zone.
+  # Localization
   time.timeZone = "UTC";
-
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   
+  # Input & XServer
   services.xserver = {
     enable = true;
     xkb = {
       layout = "us";
      };
   };
-  
-  # Define a user account.
-  users.users.admin = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
-    hashedPasswordFile = "/etc/secrets/admin-password";
-  };
 
-  # Enable the OpenSSH daemon.
+  # Remote Access
   services.openssh.enable = true;
   programs.ssh.startAgent = true;
 
-  # Disable the firewall altogether.
-  networking.firewall.enable = false;
-
-  # This option defines the first version of NixOS you have installed on this particular machine.
+  # Core system state version. Do not alter without verifying breaking changes.
   system.stateVersion = "26.05"; 
 }
