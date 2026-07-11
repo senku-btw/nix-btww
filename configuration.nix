@@ -17,7 +17,7 @@
   ];
 
   # Define your hostname.
-  networking.hostName = "nix-btw";
+  networking.hostName = "prometheus";
 
   # Configure network connections interactively with nmcli or nmtui.
   networking.networkmanager.enable = true;
