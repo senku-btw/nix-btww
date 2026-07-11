@@ -9,6 +9,9 @@
       ./boot/initrd.nix
       ./drivers/nvidia-graphics.nix
       
+      # Peripherals
+      ./hardware/keyboard/keychron-k2.nix
+
       # Environment & Display
       ./services/greetd.nix
       ./sessions/mangowm.nix
@@ -31,14 +34,6 @@
   # Localization
   time.timeZone = "UTC";
   i18n.defaultLocale = "en_US.UTF-8";
-  
-  # Input & XServer
-  services.xserver = {
-    enable = true;
-    xkb = {
-      layout = "us";
-     };
-  };
 
   # Remote Access
   services.openssh.enable = true;
