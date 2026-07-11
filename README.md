@@ -1,4 +1,4 @@
-<h1 align="center">NixOS Configuration</h1>
+<h1 align="center">nix-btww</h1>
 
 <p align="center">
   A pristine, production-grade, meticulously optimised ecosystem; powered by Home-Manager.
