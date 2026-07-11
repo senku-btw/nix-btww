@@ -1,16 +1,11 @@
 { pkgs, ... }:
 
 {
-  home.packages = with pkgs; [
-    # Desktop Environment / Window Manager tools
-    bemenu  # The application launcher
-    foot    # The terminal emulator
-    wget
-    curl
-    git
-    nano
-    btop
-    tree
-    fastfetch
+  home.packages = [
+    pkgs.bemenu        # Dynamic menu and application launcher
+    pkgs.foot          # Fast, lightweight Wayland terminal emulator
+    pkgs.btop          # Interactive system resource monitor
+    pkgs.tree          # Directory structure visualizer
+    pkgs.fastfetch     # System information display client
   ];
 }
