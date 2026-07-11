@@ -12,7 +12,8 @@ in
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
-  home-manager.users.admin = { pkgs, ... }: {
+  # Changed from 'admin' to 'nyx'
+  home-manager.users.nyx = { pkgs, ... }: {
     
     imports = [
       ../packages/environment-packages.nix
@@ -20,8 +21,8 @@ in
     ];
 
     # User Profile Definition
-    home.username = "admin";
-    home.homeDirectory = "/home/admin";
+    home.username = "nyx";
+    home.homeDirectory = "/home/nyx";
 
     home.file.".config/mango/config.conf".source = ../config/mango/config.conf;
 
