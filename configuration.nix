@@ -4,7 +4,7 @@
 {
   imports =
     [ 
-      ./machines/nix-btw/hardware-configuration.nix
+      ./machines/prometheus/hardware-configuration.nix
       ./boot/initrd.nix
       ./drivers/nvidia-graphics.nix
       ./services/greetd.nix
