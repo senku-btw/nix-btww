@@ -23,10 +23,7 @@ in
     home.username = "admin";
     home.homeDirectory = "/home/admin";
 
-    # ==========================================================================
-    # Production-Grade Deployment: Pure Parallel Repository Resolution
-    # ==========================================================================
-    home.file.".config/mango/config.conf".source = ../configurations/mango/config.conf;
+    home.file.".config/mango/config.conf".source = ../config/mango/config.conf;
 
     # Programs & Services
     programs.git.enable = true;
