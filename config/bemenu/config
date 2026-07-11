@@ -1,0 +1,43 @@
+# ~/.config/bemenu/config
+# Paranoid Performance Profile: Single-line horizontal dmenu architecture
+
+# --- ENGINE & COMPOSITOR DIRECTIVES ---
+backend = wayland
+# Forces bemenu to stay on top of any panels without overlapping delay calculations
+no-overlap = true
+
+# --- LAYOUT MECHANICS ---
+# 0 lines forces horizontal dmenu-style single line rendering (fastest string calculation path)
+lines = 0
+# Pre-calculates filtering without case conversion overhead during active typing
+ignorecase = true
+
+# --- TYPOGRAPHY & RENDERING ---
+# Terminus is an excellent bitmap choice. 
+# Explicitly specifying the full Pango description bypasses lookup fallback lag.
+font = Terminus 8
+line-height = 14
+
+# --- GEOMETRY & PACKING ---
+# Stripping decorations eliminates sub-pixel alignment calculations
+scrollbar = none
+border = 0
+border-radius = 0
+
+# --- COLOR SYSTEM ---
+# Keeping a unified background prevents the GPU/Compositor from having to calculate 
+# multiple alpha blendings or structural context switches across empty elements.
+title-background = #222222
+title-foreground = #ffffff
+
+filter-background = #222222
+filter-foreground = #ffffff
+
+normal-background = #222222
+normal-foreground = #ffffff
+
+selected-background = #005577
+selected-foreground = #ffffff
+
+highlight-background = #005577
+highlight-foreground = #ffffff
