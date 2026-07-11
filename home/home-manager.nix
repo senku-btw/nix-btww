@@ -12,7 +12,6 @@ in
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
-  # Changed from 'admin' to 'nyx'
   home-manager.users.nyx = { pkgs, ... }: {
     
     imports = [
