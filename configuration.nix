@@ -4,8 +4,7 @@
 {
   imports =
     [ 
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      ./machines/nix-btw/hardware-configuration.nix
       ./boot/initrd.nix
       ./drivers/nvidia-graphics.nix
       ./services/greetd.nix
@@ -39,7 +38,7 @@
   # Define a user account.
   users.users.admin = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "networkmanager" ];
     hashedPasswordFile = "/etc/secrets/admin-password";
   };
 
@@ -51,6 +50,5 @@
   networking.firewall.enable = false;
 
   # This option defines the first version of NixOS you have installed on this particular machine.
-  # Do NOT change this value unless you have manually inspected all the changes it would make.
   system.stateVersion = "26.05"; 
 }
