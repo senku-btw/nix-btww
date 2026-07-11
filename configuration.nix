@@ -10,7 +10,7 @@
       ./drivers/nvidia-graphics.nix
       
       # Peripherals
-      ./hardware/keyboard/keychron-k2.nix
+      ./hardware/peripherals/keyboards/keychron-k2.nix
 
       # Environment & Display
       ./services/greetd.nix
